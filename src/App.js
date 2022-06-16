@@ -63,6 +63,12 @@ function App() {
     setItemToAdd("");
   };
 
+  const handleItemD = ({key}) => {
+    setItems((prevItems) =>
+    prevItems.filter(item => item.key != key)
+  );
+  };
+
   const handleItemDone = ({ key }) => {
     //first way
     // const itemIndex = items.findIndex((item) => item.key === key);
@@ -89,59 +95,7 @@ function App() {
     );
   };
 
-  const handleItemI = ({ key }) => {
-    //first way
-    // const itemIndex = items.findIndex((item) => item.key === key);
-    // const oldItem = items[itemIndex];
-    // const newItem = { ...oldItem, done: !oldItem.done };
-    // const leftSideOfAnArray = items.slice(0, itemIndex);
-    // const rightSideOfAnArray = items.slice(itemIndex + 1, items.length);
-    // setItems([...leftSideOfAnArray, newItem, ...rightSideOfAnArray]);
-
-    //  second way
-    // const changedItem = items.map((item) => {
-    //   if (item.key === key) {
-    //     return { ...item, done: item.done ? false : true };
-    //   } else return item;
-    // });
-
-    //second way updated
-    setItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.key === key) {
-          return { ...item, important: !item.important };
-        } else return item;
-      })
-    );
-  };
-
   
-
-  const handleItemD = ({ key }) => {
-    //first way
-    // const itemIndex = items.findIndex((item) => item.key === key);
-    // const oldItem = items[itemIndex];
-    // const newItem = { ...oldItem, done: !oldItem.done };
-    // const leftSideOfAnArray = items.slice(0, itemIndex);
-    // const rightSideOfAnArray = items.slice(itemIndex + 1, items.length);
-    // setItems([...leftSideOfAnArray, newItem, ...rightSideOfAnArray]);
-
-    //  second way
-    // const changedItem = items.map((item) => {
-    //   if (item.key === key) {
-    //     return { ...item, done: item.done ? false : true };
-    //   } else return item;
-    // });
-
-    //second way updated
-    setItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.key === key) {
-          return {};
-        } else return item;
-      })
-    );
-  };
 
   
 
@@ -166,6 +120,33 @@ function App() {
       : filterType === "active"
       ? items.filter((item) => !item.done && item.label.toLowerCase().includes(searchValue.toLowerCase()))
       : items.filter((item) => item.done && item.label.toLowerCase().includes(searchValue.toLowerCase()))
+  
+
+      const handleItemI = ({ key }) => {
+        //first way
+        // const itemIndex = items.findIndex((item) => item.key === key);
+        // const oldItem = items[itemIndex];
+        // const newItem = { ...oldItem, done: !oldItem.done };
+        // const leftSideOfAnArray = items.slice(0, itemIndex);
+        // const rightSideOfAnArray = items.slice(itemIndex + 1, items.length);
+        // setItems([...leftSideOfAnArray, newItem, ...rightSideOfAnArray]);
+    
+        //  second way
+        // const changedItem = items.map((item) => {
+        //   if (item.key === key) {
+        //     return { ...item, done: item.done ? false : true };
+        //   } else return item;
+        // });
+    
+        //second way updated
+        setItems((prevItems) =>
+          prevItems.map((item) => {
+            if (item.key === key) {
+              return { ...item, important: !item.important };
+            } else return item;
+          })
+        );
+      };
 
   return (
     <div className="todo-app">
