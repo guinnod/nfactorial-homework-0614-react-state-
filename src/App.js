@@ -42,6 +42,8 @@ function App() {
 
   const [filterType, setFilterType] = useState("");
 
+  const[searchValue, setSearch] = useState("");
+
   const handleChangeItem = (event) => {
     setItemToAdd(event.target.value);
   };
@@ -87,6 +89,62 @@ function App() {
     );
   };
 
+  const handleItemI = ({ key }) => {
+    //first way
+    // const itemIndex = items.findIndex((item) => item.key === key);
+    // const oldItem = items[itemIndex];
+    // const newItem = { ...oldItem, done: !oldItem.done };
+    // const leftSideOfAnArray = items.slice(0, itemIndex);
+    // const rightSideOfAnArray = items.slice(itemIndex + 1, items.length);
+    // setItems([...leftSideOfAnArray, newItem, ...rightSideOfAnArray]);
+
+    //  second way
+    // const changedItem = items.map((item) => {
+    //   if (item.key === key) {
+    //     return { ...item, done: item.done ? false : true };
+    //   } else return item;
+    // });
+
+    //second way updated
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item.key === key) {
+          return { ...item, important: !item.important };
+        } else return item;
+      })
+    );
+  };
+
+  
+
+  const handleItemD = ({ key }) => {
+    //first way
+    // const itemIndex = items.findIndex((item) => item.key === key);
+    // const oldItem = items[itemIndex];
+    // const newItem = { ...oldItem, done: !oldItem.done };
+    // const leftSideOfAnArray = items.slice(0, itemIndex);
+    // const rightSideOfAnArray = items.slice(itemIndex + 1, items.length);
+    // setItems([...leftSideOfAnArray, newItem, ...rightSideOfAnArray]);
+
+    //  second way
+    // const changedItem = items.map((item) => {
+    //   if (item.key === key) {
+    //     return { ...item, done: item.done ? false : true };
+    //   } else return item;
+    // });
+
+    //second way updated
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item.key === key) {
+          return {};
+        } else return item;
+      })
+    );
+  };
+
+  
+
   const handleFilterItems = (type) => {
     setFilterType(type);
   };
@@ -96,11 +154,18 @@ function App() {
   const amountLeft = items.length - amountDone;
 
   const filteredItems =
+    !searchValue
+    ?
     !filterType || filterType === "all"
       ? items
       : filterType === "active"
       ? items.filter((item) => !item.done)
-      : items.filter((item) => item.done);
+      : items.filter((item) => item.done)
+    : !filterType || filterType === "all"
+      ? items.filter((item)=> item.label.toLowerCase().includes(searchValue.toLowerCase()))
+      : filterType === "active"
+      ? items.filter((item) => !item.done && item.label.toLowerCase().includes(searchValue.toLowerCase()))
+      : items.filter((item) => item.done && item.label.toLowerCase().includes(searchValue.toLowerCase()))
 
   return (
     <div className="todo-app">
@@ -118,6 +183,8 @@ function App() {
           type="text"
           className="form-control search-input"
           placeholder="type to search"
+          value={searchValue}
+          onInput={e => setSearch(e.target.value)}
         />
         {/* Item-status-filter */}
         <div className="btn-group">
@@ -141,7 +208,7 @@ function App() {
         {filteredItems.length > 0 &&
           filteredItems.map((item) => (
             <li key={item.key} className="list-group-item">
-              <span className={`todo-list-item${item.done ? " done" : ""}`}>
+              <span className={`todo-list-item${item.done ? " done" : ""}${item.important ? " important" : ""}`}>
                 <span
                   className="todo-list-item-label"
                   onClick={() => handleItemDone(item)}
@@ -152,6 +219,7 @@ function App() {
                 <button
                   type="button"
                   className="btn btn-outline-success btn-sm float-right"
+                  onClick={() => handleItemI(item)}
                 >
                   <i className="fa fa-exclamation" />
                 </button>
@@ -159,6 +227,7 @@ function App() {
                 <button
                   type="button"
                   className="btn btn-outline-danger btn-sm float-right"
+                  onClick={() => handleItemD(item)}
                 >
                   <i className="fa fa-trash-o" />
                 </button>
