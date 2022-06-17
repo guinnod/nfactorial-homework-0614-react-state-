@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
@@ -20,25 +20,63 @@ const buttons = [
 
 const toDoItems = [
   {
-    key: uuidv4(),
+    key: 1,
     label: "Have fun",
   },
   {
-    key: uuidv4(),
+    key: 2,
     label: "Spread Empathy",
   },
   {
-    key: uuidv4(),
+    key: 3,
     label: "Generate Value",
   },
 ];
+function allStorage() {
+
+  let values = [],
+      keys = Object.keys(localStorage)
+      for(let i = 0; i < keys.length; i++) {
+      if (keys[i].includes('Import')||keys[i].includes('Done')) {
+
+      }
+      else {
+      let la = localStorage.getItem(keys[i]);
+      let im = localStorage.getItem(keys[i] + 'Import');
+      let dn = localStorage.getItem(keys[i] + 'Done');
+      let obj = {
+        key: keys[i],
+        label: la,
+        important: im,
+        done: dn
+      }
+      values.push(obj);
+      }
+    } 
+  return values;
+}
+
+const toDoItems1 = allStorage();
 
 // helpful links:
 // useState crash => https://blog.logrocket.com/a-guide-to-usestate-in-react-ecb9952e406c/
 function App() {
+  if (Object.keys(localStorage).length<1) {
+      toDoItems.forEach(e=>{
+    let keyLabel = e.key;
+    let selfLabel = e.label;
+    let keyImport = keyLabel + 'Import';
+    let selfImport = e.important??'false';
+    let keyDone = keyLabel + 'Done';
+    let selfDone = e.done?? 'false';
+    localStorage.setItem(keyLabel, selfLabel);
+    localStorage.setItem(keyImport, selfImport);
+    localStorage.setItem(keyDone, selfDone);
+  });
+  }
   const [itemToAdd, setItemToAdd] = useState("");
   //arrow declaration => expensive computation ex: API calls
-  const [items, setItems] = useState(() => toDoItems);
+  const [items, setItems] = useState(() => toDoItems1);
 
   const [filterType, setFilterType] = useState("");
 
@@ -47,23 +85,40 @@ function App() {
   const handleChangeItem = (event) => {
     setItemToAdd(event.target.value);
   };
-
+  // items.forEach(e=>{
+  //   let keyLabel = e.key;
+  //   let selfLabel = e.label;
+  //   let keyImport = keyLabel + 'Import';
+  //   let selfImport = e.important??'false';
+  //   let keyDone = keyLabel + 'Done';
+  //   let selfDone = e.done?? 'false';
+  //   localStorage.setItem(keyLabel, selfLabel);
+  //   localStorage.setItem(keyImport, selfImport);
+  //   localStorage.setItem(keyDone, selfDone);
+  // });
+  
   const handleAddItem = () => {
     // mutating !WRONG!
     // const oldItems = items;
     // oldItems.push({ label: itemToAdd, key: uuidv4() });
     // setItems(oldItems);
-
+   
     // not mutating !CORRECT!
     setItems((prevItems) => [
       { label: itemToAdd, key: uuidv4() },
       ...prevItems,
     ]);
 
+  
+
     setItemToAdd("");
-  };
+  }
+  
 
   const handleItemD = ({key}) => {
+    localStorage.removeItem(key);
+    localStorage.removeItem(key+'Import');
+    localStorage.removeItem(key+'Done');
     setItems((prevItems) =>
     prevItems.filter(item => item.key != key)
   );
@@ -89,13 +144,26 @@ function App() {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.key === key) {
-          return { ...item, done: !item.done };
+          return { ...item, done: item.done==="true"?"false":"true" };
         } else return item;
       })
     );
   };
 
+  useEffect(()=>{
+    items.forEach(e=>{
+      let keyLabel = e.key;
+      let selfLabel = e.label;
+      let keyImport = keyLabel + 'Import';
+      let selfImport = e.important??'false';
+      let keyDone = keyLabel + 'Done';
+      let selfDone = e.done??'false';
+      localStorage.setItem(keyLabel, selfLabel);
+      localStorage.setItem(keyImport, selfImport);
+      localStorage.setItem(keyDone, selfDone);
+    });
   
+  }, items);
 
   
 
@@ -142,7 +210,7 @@ function App() {
         setItems((prevItems) =>
           prevItems.map((item) => {
             if (item.key === key) {
-              return { ...item, important: !item.important };
+              return { ...item, important: item.important==="true"?"false":"true" };
             } else return item;
           })
         );
@@ -189,7 +257,7 @@ function App() {
         {filteredItems.length > 0 &&
           filteredItems.map((item) => (
             <li key={item.key} className="list-group-item">
-              <span className={`todo-list-item${item.done ? " done" : ""}${item.important ? " important" : ""}`}>
+              <span className={`todo-list-item${item.done==="true" ? " done" : ""}${item.important==="true" ? " important" : ""}`}>
                 <span
                   className="todo-list-item-label"
                   onClick={() => handleItemDone(item)}
